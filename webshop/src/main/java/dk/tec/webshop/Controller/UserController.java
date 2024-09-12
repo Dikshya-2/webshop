@@ -2,7 +2,10 @@ package dk.tec.webshop.Controller;
 
 import dk.tec.webshop.Repo.UserRepository;
 import dk.tec.webshop.model.User;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,26 +22,24 @@ public class UserController {
     }
 
     @PostMapping()
-    void  create(@RequestBody User user) {
+    public ResponseEntity<Void> create(@RequestBody User user) {
+        if (repository.findByEmail(user.getEmail()) != null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        user.setRole("USER");
         repository.save(user);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @GetMapping("/{id}")
-    User read(@PathVariable int id) {
-        return repository.findById(id).get();
-    }
-    @GetMapping()
-    List<User> getAll() {
-        return repository.findAll();
-    }
-
-    @PutMapping()
-    void update(@RequestBody User user) {
-        repository.save(user);
-    }
-
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable int id) {
-        repository.deleteById(id);
+    @PostMapping("/login")
+    public ResponseEntity<Void> login(@RequestBody User user) {
+        User existingUser = repository.findByEmail(user.getEmail());
+        if (existingUser != null && user.getPassword().equals(existingUser.getPassword())) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 }
+
+

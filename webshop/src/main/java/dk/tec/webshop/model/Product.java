@@ -11,6 +11,7 @@ public class Product {
     @Id
     @GeneratedValue
     private int id;
+    //@Column(nullable = false)
     private String name;
     @Column(length = 8000)
     private String description;
