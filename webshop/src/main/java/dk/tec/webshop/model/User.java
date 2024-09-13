@@ -3,18 +3,19 @@ package dk.tec.webshop.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name="User_table")
+@Table(name = "User_table")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
-    @Column(nullable = false)
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
+    @Column(name = "password", nullable = false)
     private String password;
 
+    @Column(name = "role")
     private String role;
 
     public int getId() {
@@ -24,7 +25,6 @@ public class User {
     public void setId(int id) {
         this.id = id;
     }
-
 
     public String getEmail() {
         return email;
@@ -50,3 +50,5 @@ public class User {
         this.role = role;
     }
 }
+
+

@@ -21,25 +21,32 @@ public class UserController {
         this.repository = repository;
     }
 
-    @PostMapping()
-    public ResponseEntity<Void> create(@RequestBody User user) {
-        if (repository.findByEmail(user.getEmail()) != null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    @PostMapping("/register")
+    public ResponseEntity<String> create(@RequestBody User user) {
+        try {
+            if (repository.findByEmail(user.getEmail()) != null) {
+                return new ResponseEntity<>("Email already exists", HttpStatus.BAD_REQUEST);
+            }
+            user.setRole("USER");
+            repository.save(user);
+            return new ResponseEntity<>("User registered successfully", HttpStatus.CREATED);
+        } catch (Exception e) {
+            e.printStackTrace(); // Print stack trace for debugging
+            return new ResponseEntity<>("An error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-        user.setRole("USER");
-        repository.save(user);
-        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody User user) {
         User existingUser = repository.findByEmail(user.getEmail());
+
         if (existingUser != null && user.getPassword().equals(existingUser.getPassword())) {
+
             return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
+
 }
 
 

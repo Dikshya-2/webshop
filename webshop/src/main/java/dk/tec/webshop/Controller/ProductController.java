@@ -31,6 +31,7 @@ public class ProductController {
     public ProductController(ProductRepository repository) {
         this.repository = repository;
     }
+
     @PostMapping()
     public ResponseEntity<String> create(@RequestBody Product product) {
         System.out.println("Product received: " + product.getName());  // Log product name
@@ -44,48 +45,39 @@ public class ProductController {
     }
 
 
-//    @PostMapping()
-//    public ResponseEntity<String> create(@RequestBody Product product) {
-//        try {
-//            repository.save(product);
-//            return ResponseEntity.status(HttpStatus.CREATED).body("Created successfully.");
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error creating : " + e.getMessage());
-//        }
-//    }
-
     @GetMapping("/{id}")
-     Product read(@PathVariable int id) {
+    Product read(@PathVariable int id) {
         return repository.findById(id).get();
     }
+
     @GetMapping()
     List<Product> getAll() {
         return repository.findAll();
     }
 
-//    @PutMapping()
+    //    @PutMapping()
 //    void update(@RequestBody Product product) {
 //        repository.save(product);
 //    }
-@PutMapping("/updateProductById/{id}")
-public ResponseEntity<Product> updateProductById(@PathVariable int id,@RequestBody Product newProductData){
-    Optional<Product> oldproductData=repository.findById(id);
+    @PutMapping("/{id}")
+    public ResponseEntity<Product> updateProductById(@PathVariable int id, @RequestBody Product newProductData) {
+        Optional<Product> oldproductData = repository.findById(id);
 
-    if(oldproductData.isPresent()){
-        Product updatedProductData= oldproductData.get();
-        updatedProductData.setName(newProductData.getName());
-        updatedProductData.setPrice(newProductData.getPrice());
-        updatedProductData.setDescription(newProductData.getDescription());
-        updatedProductData.setImageUrl(newProductData.getImageUrl());
+        if (oldproductData.isPresent()) {
+            Product updatedProductData = oldproductData.get();
+            updatedProductData.setName(newProductData.getName());
+            updatedProductData.setPrice(newProductData.getPrice());
+            updatedProductData.setDescription(newProductData.getDescription());
+            updatedProductData.setImageUrl(newProductData.getImageUrl());
 
-        Product productObj = repository.save(updatedProductData);
+            Product productObj = repository.save(updatedProductData);
 
-        return new ResponseEntity<>(productObj,HttpStatus.OK);
+            return new ResponseEntity<>(productObj, HttpStatus.OK);
 
 
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
-    return new  ResponseEntity<>(HttpStatus.NOT_FOUND);
-}
 
     @DeleteMapping("/{id}")
     public void deleteProduct(@PathVariable int id) {
